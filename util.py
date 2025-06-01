@@ -186,23 +186,23 @@ def explore_dataframe(df, name="DataFrame", save_plots=False):
     #EDA
 
     print(f"\n{'='*60}")
-    print(f"📊 EDA REPORT FOR {name.upper()}")
+    print(f"EDA REPORT FOR {name.upper()}")
     print(f"{'='*60}")
 
     # 1. Basic Info
-    print(f"\n📋 1. DATASET OVERVIEW")
+    print(f"\n1. DATASET OVERVIEW")
     print(f"   Shape: {df.shape[0]} rows x {df.shape[1]} columns")
     print(f"   Date range: {df['Year'].min()} - {df['Year'].max()}")
     print(f"   Regions: {', '.join(df['Region'].unique())}")
 
     # 2. Descriptive Statistics
-    print(f"\n📈 2. DESCRIPTIVE STATISTICS")
+    print(f"\n2. DESCRIPTIVE STATISTICS")
     numeric_cols = df.select_dtypes(include='number').columns
     desc_stats = df[numeric_cols].describe()
     print(desc_stats)
 
     # 3. Missing Values Analysis
-    print(f"\n🔍 3. MISSING VALUES ANALYSIS")
+    print(f"\n3. MISSING VALUES ANALYSIS")
     missing = df.isnull().sum()
     missing_pct = (missing / len(df)) * 100
     missing_df = pd.DataFrame({
@@ -223,10 +223,10 @@ def explore_dataframe(df, name="DataFrame", save_plots=False):
         if save_plots: plt.savefig(f'missing_values_{name.lower()}.png', dpi=300, bbox_inches='tight')
         plt.show()
     else:
-        print("✅ No missing values found!")
+        print("No missing values found!")
 
     # 4. Data Quality Assessment
-    print(f"\n🎯 4. DATA QUALITY ASSESSMENT")
+    print(f"\n4. DATA QUALITY ASSESSMENT")
     
     # Check for negative values in variables that shouldn't have them
     negative_vars = []
@@ -236,14 +236,14 @@ def explore_dataframe(df, name="DataFrame", save_plots=False):
             negative_vars.append(f"{col}: {negative_count} negative values")
     
     if negative_vars:
-        print("⚠️  Negative values found:")
+        print("Negative values found:")
         for var in negative_vars:
             print(f"   {var}")
     else:
-        print("✅ No unexpected negative values found")
+        print("No unexpected negative values found")
 
     # 5. Distribution Analysis
-    print(f"\n📊 5. DISTRIBUTION ANALYSIS")
+    print(f"\n5. DISTRIBUTION ANALYSIS")
     
     # Plot distributions for key variables
     key_vars = [col for col in ['Mobile_cellular_sub', 'Internet_users', 'Fixed_broadband', 'Coverage_mobile_cellular'] 
@@ -266,7 +266,7 @@ def explore_dataframe(df, name="DataFrame", save_plots=False):
 
     # 6. Correlation Analysis
     if len(numeric_cols) > 2:
-        print(f"\n🔗 6. CORRELATION ANALYSIS")
+        print(f"\n6. CORRELATION ANALYSIS")
         
         corr_matrix = df[numeric_cols].corr()
         
@@ -282,7 +282,7 @@ def explore_dataframe(df, name="DataFrame", save_plots=False):
                         corr_matrix.iloc[i, j]
                     ))
         
-        print(f"🔗 High correlations (|r| > 0.8):")
+        print(f"High correlations (|r| > 0.8):")
         for var1, var2, corr_val in sorted(high_corr_pairs, key=lambda x: abs(x[2]), reverse=True)[:10]:
             print(f"   {var1} ↔ {var2}: {corr_val:.3f}")
         
@@ -297,25 +297,25 @@ def explore_dataframe(df, name="DataFrame", save_plots=False):
         plt.show()
 
     # 7. Regional Analysis
-    print(f"\n🌍 7. REGIONAL ANALYSIS")
+    print(f"\n7. REGIONAL ANALYSIS")
     
     # Latest year summary by region
     latest_year = df['Year'].max()
     latest_data = df[df['Year'] == latest_year]
     
-    print(f"📅 {latest_year} Regional Summary:")
+    print(f"{latest_year} Regional Summary:")
     key_metrics = ['Mobile_cellular_sub', 'Internet_users', 'Fixed_broadband']
     available_metrics = [col for col in key_metrics if col in df.columns]
     
     if available_metrics:
         for metric in available_metrics:
-            print(f"\n   📊 {metric}:")
+            print(f"\n   {metric}:")
             metric_data = latest_data[['Region', metric]].dropna().sort_values(metric, ascending=False)
             for _, row in metric_data.head(3).iterrows():
                 print(f"      🏆 {row['Region']}: {row[metric]:.1f}")
 
     # 8. Time Series Analysis
-    print(f"\n📈 8. TIME SERIES TRENDS")
+    print(f"\n8. TIME SERIES TRENDS")
     
     # Calculate growth rates
     growth_analysis = {}
@@ -333,7 +333,7 @@ def explore_dataframe(df, name="DataFrame", save_plots=False):
 
     # Show top growth rates
     if growth_analysis:
-        print(f"\n🚀 Highest Growth Rates (CAGR %):")
+        print(f"\nHighest Growth Rates (CAGR %):")
         sorted_growth = sorted(growth_analysis.items(), key=lambda x: x[1], reverse=True)
         for metric, growth_rate in sorted_growth[:10]:
             if not np.isnan(growth_rate) and not np.isinf(growth_rate):
@@ -341,7 +341,7 @@ def explore_dataframe(df, name="DataFrame", save_plots=False):
                 print(f"   📈 {region} - {var}: {growth_rate:.1f}% CAGR")
 
     # 9. Time Series Visualizations
-    print(f"\n📊 9. GENERATING TIME SERIES PLOTS...")
+    print(f"\n9. GENERATING TIME SERIES PLOTS...")
     
     id_vars = ['Region', 'Year']
     value_vars = [col for col in df.columns if col not in id_vars and df[col].dtype in ['float64', 'int64']]
@@ -382,14 +382,16 @@ def explore_dataframe(df, name="DataFrame", save_plots=False):
         plt.show()
 
     # 10. Summary Insights
-    print(f"\n🎯 10. KEY INSIGHTS SUMMARY")
-    print(f"   📊 Dataset contains {df.shape[0]} observations across {len(df['Region'].unique())} regions")
-    print(f"   📅 Time span: {df['Year'].max() - df['Year'].min() + 1} years ({df['Year'].min()}-{df['Year'].max()})")
+    print(f"\n 10. KEY INSIGHTS SUMMARY")
+    print(f"    Dataset contains {df.shape[0]} observations across {len(df['Region'].unique())} regions")
+    print(f"    Time span: {df['Year'].max() - df['Year'].min() + 1} years ({df['Year'].min()}-{df['Year'].max()})")
     
     if missing_vars.empty:
-        print(f"   ✅ Complete data coverage")
+        print(f"    Complete data coverage")
     else:
-        print(f"   ⚠️  {len(missing_vars)} variables have missing data")
+        print(f"     {len(missing_vars)} variables have missing data")
     
-    print(f"   🔗 Found {len([x for x in high_corr_pairs if abs(x[2]) > 0.9])} very high correlations (>0.9)")
+    print(f"    Found {len([x for x in high_corr_pairs if abs(x[2]) > 0.9])} very high correlations (>0.9)")
     print(f"\n{'='*60}")
+
+
